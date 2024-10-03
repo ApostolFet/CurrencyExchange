@@ -7,11 +7,12 @@ from currency_exchange.domain.services import (
     merge_exchange_rate,
     reverse_exchange_rate,
 )
+from currency_exchange.domain.value_objects import CurrencyCode, Rate
 
 
 def test_exchange_currency() -> None:
-    ruble = Currency("Russian Ruble", "RUB", "", 0)
-    dollar = Currency("US Dollar", "USD", "", 1)
+    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "", 0)
+    dollar = Currency("US Dollar", CurrencyCode("USD"), "", 1)
     rate = Decimal(30)
     exchange_rate = create_exchange_rate(ruble, dollar, rate)
     amount = Decimal(1_000)
@@ -23,12 +24,12 @@ def test_exchange_currency() -> None:
 
 
 def test_reverse_exchange_rate() -> None:
-    ruble = Currency("Russian Ruble", "RUB", "", 0)
-    dollar = Currency("US Dollar", "USD", "", 1)
+    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "", 0)
+    dollar = Currency("US Dollar", CurrencyCode("USD"), "", 1)
     rate = Decimal(100)
 
     exchange_rate = create_exchange_rate(ruble, dollar, rate)
-    expected_result_rate = Decimal("0.01")
+    expected_result_rate = Rate(Decimal("0.01"))
 
     result_excchange = reverse_exchange_rate(exchange_rate)
 
@@ -38,21 +39,21 @@ def test_reverse_exchange_rate() -> None:
 
 
 def test_merge_exchange_rate() -> None:
-    ruble = Currency("Russian Ruble", "RUB", "", 0)
-    dollar = Currency("US Dollar", "USD", "", 1)
-    euro = Currency("Euro", "EUR", "", 2)
+    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "", 0)
+    dollar = Currency("US Dollar", CurrencyCode("USD"), "", 1)
+    euro = Currency("Euro", CurrencyCode("EUR"), "", 2)
 
     rate_ruble_dollar = Decimal(100)
     exchange_rate_ruble_dollar = create_exchange_rate(ruble, dollar, rate_ruble_dollar)
     rate_dollar_euro = Decimal(2)
     exchange_rate_dollar_euro = create_exchange_rate(dollar, euro, rate_dollar_euro)
-    expected_result_rate = Decimal(200)
+    expected_result_rate = Rate(Decimal(200))
 
-    result_excchange = merge_exchange_rate(
+    result_exchange = merge_exchange_rate(
         exchange_rate_ruble_dollar,
         exchange_rate_dollar_euro,
     )
 
-    assert result_excchange.rate == expected_result_rate
-    assert result_excchange.base_currency_id == ruble.id
-    assert result_excchange.target_currency_id == euro.id
+    assert result_exchange.rate == expected_result_rate
+    assert result_exchange.base_currency_id == ruble.id
+    assert result_exchange.target_currency_id == euro.id

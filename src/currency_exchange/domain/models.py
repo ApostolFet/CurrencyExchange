@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from decimal import Decimal
+
+from currency_exchange.domain.value_objects import CurrencyCode, Rate
 
 type CurrencyId = int
 type ExchangeRateId = int
@@ -8,7 +9,7 @@ type ExchangeRateId = int
 @dataclass
 class Currency:
     name: str
-    code: str
+    code: CurrencyCode
     sign: str
     id: CurrencyId | None = None
 
@@ -17,5 +18,5 @@ class Currency:
 class ExchangeRate:
     base_currency_id: CurrencyId
     target_currency_id: CurrencyId
-    rate: Decimal
+    rate: Rate
     id: ExchangeRateId | None = None
