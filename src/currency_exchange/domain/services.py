@@ -37,8 +37,10 @@ def merge_exchange_rate(
     target_exchange_rate: ExchangeRate,
 ) -> ExchangeRate:
     if base_exchange_rate.target_currency_id != target_exchange_rate.base_currency_id:
-        raise ExchangeRateCantBeMergeError("Cant merge exchange rate")
+        raise ExchangeRateCantBeMergeError("Cant merge non related exchange rate")
+
     merged_rate = base_exchange_rate.rate.value * target_exchange_rate.rate.value
+
     return ExchangeRate(
         base_exchange_rate.base_currency_id,
         target_exchange_rate.target_currency_id,
