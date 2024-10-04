@@ -26,8 +26,8 @@ def test_create_exchange_rate() -> None:
     result_exchange = create_exchange_rate(ruble, dollar, rate_ruble_dollar)
 
     assert result_exchange.rate == expected_result_rate
-    assert result_exchange.base_currency_id == ruble.id
-    assert result_exchange.target_currency_id == dollar.id
+    assert result_exchange.base_currency == ruble
+    assert result_exchange.target_currency == dollar
 
 
 def test_cant_create_exchange_rate_without_currency_id() -> None:
@@ -63,8 +63,8 @@ def test_reverse_exchange_rate() -> None:
     result_excchange = reverse_exchange_rate(exchange_rate)
 
     assert result_excchange.rate == expected_result_rate
-    assert result_excchange.base_currency_id == dollar.id
-    assert result_excchange.target_currency_id == ruble.id
+    assert result_excchange.base_currency == dollar
+    assert result_excchange.target_currency == ruble
 
 
 def test_merge_exchange_rate() -> None:
@@ -84,8 +84,8 @@ def test_merge_exchange_rate() -> None:
     )
 
     assert result_exchange.rate == expected_result_rate
-    assert result_exchange.base_currency_id == ruble.id
-    assert result_exchange.target_currency_id == euro.id
+    assert result_exchange.base_currency == ruble
+    assert result_exchange.target_currency == euro
 
 
 def test_cant_merge_non_related_exchange_rate() -> None:
