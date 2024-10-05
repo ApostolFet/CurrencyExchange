@@ -1,21 +1,10 @@
 from decimal import Decimal
 
 from currency_exchange.domain.exceptions import (
-    CurrencyDontHaveIdError,
     ExchangeRateCantBeMergeError,
 )
-from currency_exchange.domain.models import Currency, ExchangeRate
+from currency_exchange.domain.models import ExchangeRate
 from currency_exchange.domain.value_objects import Rate
-
-
-def create_exchange_rate(
-    base_currency: Currency,
-    target_currency: Currency,
-    rate: Decimal,
-) -> ExchangeRate:
-    if base_currency.id is None or target_currency.id is None:
-        raise CurrencyDontHaveIdError()
-    return ExchangeRate(base_currency, target_currency, Rate(rate))
 
 
 def exchange_currency(exchange_rate: ExchangeRate, amount: Decimal) -> Decimal:

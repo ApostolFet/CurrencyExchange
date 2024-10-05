@@ -1,6 +1,5 @@
 from currency_exchange.application.exceptions import ExchangeRateNotFoundError
 from currency_exchange.application.models import (
-    CreateCurrency,
     ExchangeCurrencyDTO,
     ExchangedCurrencyDTO,
     ExchangeRateDTO,
@@ -10,43 +9,13 @@ from currency_exchange.application.repo import (
     CurrencyRepository,
     ExchangeRateRepository,
 )
-from currency_exchange.domain.models import Currency, ExchangeRate
+from currency_exchange.domain.models import ExchangeRate
 from currency_exchange.domain.services import (
-    create_exchange_rate,
     exchange_currency,
     merge_exchange_rate,
     reverse_exchange_rate,
 )
-from currency_exchange.domain.value_objects import CurrencyCode, Rate
-
-
-class GetCurrenciesInteractor:
-    def __init__(self, currency_repo: CurrencyRepository):
-        self._currency_repo = currency_repo
-
-    def __call__(self) -> list[Currency]:
-        return self._currency_repo.get_all()
-
-
-class GetCurrencyInteractor:
-    def __init__(self, currency_repo: CurrencyRepository):
-        self._currency_repo = currency_repo
-
-    def __call__(self, code: str) -> Currency:
-        return self._currency_repo.get_by_code(code)
-
-
-class CreateCurrencyInteracotor:
-    def __init__(self, currency_repo: CurrencyRepository) -> None:
-        self._currency_repo = currency_repo
-
-    def __call__(self, create_currency: CreateCurrency) -> Currency:
-        currency = Currency(
-            create_currency.name,
-            CurrencyCode(create_currency.code),
-            sign=create_currency.sign,
-        )
-        return self._currency_repo.add(currency)
+from currency_exchange.domain.value_objects import Rate
 
 
 class GetExchangeRatesInteractor:
@@ -86,10 +55,10 @@ class CreateExchangeRateInteractor:
         )
         base_currency, target_currency = self._currency_repo.get_pair(codes)
 
-        exchange_rate = create_exchange_rate(
+        exchange_rate = ExchangeRate(
             base_currency,
             target_currency,
-            exchange_rate_dto.rate,
+            Rate(exchange_rate_dto.rate),
         )
 
         return self._exchange_rate_repo.add(exchange_rate)
