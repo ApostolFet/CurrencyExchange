@@ -29,6 +29,10 @@ dev = [
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
+
 [tool.mypy]
 strict = true
 warn_unreachable = true
@@ -63,4 +67,6 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+
+"src/simple_server/app.py" = ["N802"]
 
