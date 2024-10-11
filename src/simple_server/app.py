@@ -6,8 +6,9 @@ from socketserver import BaseServer
 from typing import Any
 from urllib.parse import parse_qsl, urlparse
 
-from simple_server.request import Request
-from simple_server.router import RequestNotHandledError, Router
+from simple_server.exceptions import RequestNotHandledError
+from simple_server.router import Router
+from simple_server.types import Request
 
 logger = getLogger(__name__)
 
@@ -72,13 +73,28 @@ class RequestHandler(BaseHTTPRequestHandler):
         params = self._parse_params()
         path = self._parse_path()
         request = Request(body, params, {})
+
         for router in self._app.routers:
             try:
-                router.handle(request, self.command, path)
+                response = router.handle(request, self.command, path)
             except RequestNotHandledError:
                 continue
             else:
-                break
+                if response.body is not None:
+                    response_body = json.dumps(response.body)
+                    content_type = "application/json"
+                else:
+                    response_body = ""
+                    content_type = "text/plain"
+
+                self.send_response(response.status_code)
+                self.send_header("Content-Length", str(len(response_body)))
+                self.send_header("Content-Type", content_type)
+                self.end_headers()
+                self.wfile.write(response_body.encode())
+                return
+
+        self.send_error(404)
 
     def _parse_body(self) -> dict[str, Any]:
         content_len = int(self.headers.get("Content-Length", "0"))
