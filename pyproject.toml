@@ -69,4 +69,5 @@ ignore = [
 "__init__.py" = ["F401"]
 
 "src/simple_server/app.py" = ["N802"]
+"src/currency_exchange/application/models.py" = ["N815"]
 
