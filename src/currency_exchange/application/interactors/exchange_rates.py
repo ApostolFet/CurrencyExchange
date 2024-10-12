@@ -1,5 +1,7 @@
 from currency_exchange.application.exceptions import ExchangeRateNotFoundError
 from currency_exchange.application.models import (
+    CreateExchangeRateDTO,
+    CurrencyDTO,
     ExchangeCurrencyDTO,
     ExchangedCurrencyDTO,
     ExchangeRateDTO,
@@ -22,8 +24,14 @@ class GetExchangeRatesInteractor:
     def __init__(self, exchange_rate_repo: ExchangeRateRepository):
         self._exchange_rate_repo = exchange_rate_repo
 
-    def __call__(self) -> list[ExchangeRate]:
-        return self._exchange_rate_repo.get_all()
+    def __call__(self) -> list[ExchangeRateDTO]:
+        exchange_rates = self._exchange_rate_repo.get_all()
+
+        exchange_rates_dto = [
+            ExchangeRateDTO.from_domain(exchange_rate)
+            for exchange_rate in exchange_rates
+        ]
+        return exchange_rates_dto
 
 
 class GetExchangeRateInteractor:
@@ -33,10 +41,11 @@ class GetExchangeRateInteractor:
     def __call__(
         self,
         get_exchage_rate: GetExchangeRate,
-    ) -> ExchangeRate:
-        return self._exchange_rate_repo.get_by_currency_codes(
+    ) -> ExchangeRateDTO:
+        exchange_rate = self._exchange_rate_repo.get_by_currency_codes(
             get_exchage_rate.base_code, get_exchage_rate.target_code
         )
+        return ExchangeRateDTO.from_domain(exchange_rate)
 
 
 class CreateExchangeRateInteractor:
@@ -48,7 +57,7 @@ class CreateExchangeRateInteractor:
         self._exchange_rate_repo = exchange_rate_repo
         self._currency_repo = currency_repo
 
-    def __call__(self, exchange_rate_dto: ExchangeRateDTO) -> ExchangeRate:
+    def __call__(self, exchange_rate_dto: CreateExchangeRateDTO) -> ExchangeRateDTO:
         codes = (
             exchange_rate_dto.base_currency_code,
             exchange_rate_dto.target_currency_code,
@@ -61,7 +70,8 @@ class CreateExchangeRateInteractor:
             Rate(exchange_rate_dto.rate),
         )
 
-        return self._exchange_rate_repo.add(exchange_rate)
+        self._exchange_rate_repo.add(exchange_rate)
+        return ExchangeRateDTO.from_domain(exchange_rate)
 
 
 class UpdateExchangeRateInteractor:
@@ -73,7 +83,7 @@ class UpdateExchangeRateInteractor:
         self._exchange_rate_repo = exchange_rate_repo
         self._currency_repo = currency_repo
 
-    def __call__(self, exchange_rate_dto: ExchangeRateDTO) -> ExchangeRate:
+    def __call__(self, exchange_rate_dto: CreateExchangeRateDTO) -> ExchangeRateDTO:
         codes = (
             exchange_rate_dto.base_currency_code,
             exchange_rate_dto.target_currency_code,
@@ -82,7 +92,9 @@ class UpdateExchangeRateInteractor:
         exchange_rate = self._exchange_rate_repo.get_by_currency_codes(*codes)
         exchange_rate.rate = Rate(exchange_rate_dto.rate)
 
-        return self._exchange_rate_repo.add(exchange_rate)
+        self._exchange_rate_repo.add(exchange_rate)
+
+        return ExchangeRateDTO.from_domain(exchange_rate)
 
 
 class ExchangeCurrencyInteractor:
@@ -127,9 +139,14 @@ class ExchangeCurrencyInteractor:
             exchange_currency_dto.amount,
         )
 
-        return ExchangedCurrencyDTO(
-            exchange_rate.base_currency,
+        base_currency = CurrencyDTO.from_domain(exchange_rate.base_currency)
+        target_currency = CurrencyDTO.from_domain(
             exchange_rate.target_currency,
+        )
+
+        return ExchangedCurrencyDTO(
+            base_currency,
+            target_currency,
             exchange_rate.rate.value,
             exchange_currency_dto.amount,
             converted_amount,

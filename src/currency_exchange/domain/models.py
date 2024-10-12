@@ -24,7 +24,7 @@ class Entity[T: Hashable]:
         return hash(self.id)
 
 
-@dataclass
+@dataclass(eq=False)
 class Currency(Entity[CurrencyId]):
     name: str
     code: CurrencyCode
@@ -32,7 +32,7 @@ class Currency(Entity[CurrencyId]):
     id: CurrencyId = field(default_factory=uuid4)
 
 
-@dataclass
+@dataclass(eq=False)
 class ExchangeRate(Entity[ExchangeRateId]):
     base_currency: Currency
     target_currency: Currency
