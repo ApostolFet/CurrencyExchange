@@ -6,6 +6,7 @@ from socketserver import BaseServer
 from typing import Any
 from urllib.parse import parse_qsl, urlparse
 
+from simple_server.encoder import SimpleEncoder
 from simple_server.exceptions import RequestNotHandledError
 from simple_server.router import Router
 from simple_server.types import Request
@@ -81,7 +82,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 continue
             else:
                 if response.body is not None:
-                    response_body = json.dumps(response.body)
+                    response_body = json.dumps(response.body, cls=SimpleEncoder)
                     content_type = "application/json"
                 else:
                     response_body = ""

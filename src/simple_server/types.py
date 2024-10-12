@@ -2,6 +2,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+type Body = dict[str, Any] | list[dict[str, Any]]
+
 
 @dataclass
 class Request:
@@ -13,7 +15,7 @@ class Request:
 @dataclass
 class Response:
     status_code: int = 200
-    body: dict[str, Any] | None = None
+    body: Body | None = None
 
 
 type Path = str
