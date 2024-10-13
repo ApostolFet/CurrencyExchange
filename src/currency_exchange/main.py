@@ -1,9 +1,12 @@
 import logging
 import sys
 
+from currency_exchange.ioc import add_dependencies
 from currency_exchange.presentation.handlers.currencies import currency_router
 from currency_exchange.presentation.handlers.exchange import exchange_router
 from currency_exchange.presentation.handlers.exchange_rates import exchange_rates_router
+from simple_di import Container
+from simple_di.integration import setup
 from simple_server import SimpleApp
 
 
@@ -15,13 +18,21 @@ def main() -> None:
         level=logging.INFO,
     )
     server_address = ("0.0.0.0", 8000)
+
     app = SimpleApp("CurrencyExchange")
 
     app.include_router(exchange_router)
     app.include_router(currency_router)
     app.include_router(exchange_rates_router)
 
-    app.run(*server_address)
+    container = Container()
+    add_dependencies(container)
+    setup(app, container)
+
+    try:
+        app.run(*server_address)
+    finally:
+        container.close()
 
 
 if __name__ == "__main__":
