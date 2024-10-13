@@ -1,9 +1,8 @@
 from collections.abc import Callable
-from typing import Literal
 
-from simple_server.exceptions import RequestNotHandledError
-from simple_server.match_path import PathNotMatchError, match_path
-from simple_server.types import HandlerRow, Request, Response
+from simple_server.exceptions import PathNotMatchError, RequestNotHandledError
+from simple_server.match_path import match_path
+from simple_server.types import Handler, HandlerRow, Method, Path, Request, Response
 
 
 class Router:
@@ -13,15 +12,15 @@ class Router:
 
     def route(
         self,
-        method: Literal["GET", "POST", "PATCH", "DELETE", "PUT"],
-        path: str,
-    ) -> Callable[[Callable[..., Response]], None]:
-        def decorate_handler(func: Callable[..., Response]) -> None:
+        method: Method,
+        path: Path,
+    ) -> Callable[[Handler], None]:
+        def decorate_handler(func: Handler) -> None:
             self._handler_registry.append((method, path, func))
 
         return decorate_handler
 
-    def handle(self, request: Request, method: str, path: str) -> Response:
+    def handle(self, request: Request, method: Method, path: Path) -> Response:
         for registry_method, registry_path, registry_handler in self._handler_registry:
             if registry_method != method:
                 continue

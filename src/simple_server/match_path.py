@@ -1,4 +1,4 @@
-class PathNotMatchError(Exception): ...
+from simple_server.exceptions import PathNotMatchError
 
 
 def match_path(path: str, template: str) -> dict[str, str]:
