@@ -26,6 +26,11 @@ dev = [
     "ruff==0.6.8",
 ]
 
+[project.scripts]
+currency-exchange-run = "currency_exchange.main:main"
+currency-exchange-migrations-up = "currency_exchange.infrastructure.database.migrations.create_tables_currency_exchange:up"
+currency-exchange-migrations-down = "currency_exchange.infrastructure.database.migrations.create_tables_currency_exchange:down"
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
