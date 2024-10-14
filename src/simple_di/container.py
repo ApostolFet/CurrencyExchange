@@ -1,9 +1,9 @@
 from collections.abc import Callable
-from typing import Annotated, Final, Literal, get_args, get_origin, get_type_hints
+from typing import Annotated, Any, Final, Literal, get_args, get_origin, get_type_hints
 
 type Scope = Literal["APP", "REQUEST"]
 type Getter = Callable[..., object]
-type Deliter = Callable[[object], None]
+type Deliter = Callable[[Any], None]
 
 AVAILIBLE_SCOPES: Final[dict[Scope, list[Scope]]] = {
     "APP": ["APP"],
@@ -65,11 +65,19 @@ class Container:
         return instance
 
     def close(self, scope: Scope = "APP") -> None:
+        outdated_objects = []
         for (scope_obj, type_obj), created_object in self._cached_objects.items():
             if scope_obj != scope:
                 continue
+
             getter_deliter = self._provides.get((scope, type_obj))
             if getter_deliter is None:
                 raise ValueError
+
             _, deliter = getter_deliter
             deliter(created_object)
+
+            outdated_objects.append((scope_obj, type_obj))
+
+        for scope_obj, type_obj in outdated_objects:
+            del self._cached_objects[(scope_obj, type_obj)]
