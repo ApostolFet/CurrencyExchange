@@ -1,6 +1,9 @@
 import logging
 import sys
 
+from currency_exchange.infrastructure.database.converters import (
+    register_decimal,
+)
 from currency_exchange.ioc import add_dependencies
 from currency_exchange.presentation.handlers.currencies import currency_router
 from currency_exchange.presentation.handlers.exchange import exchange_router
@@ -18,6 +21,7 @@ def main() -> None:
         level=logging.INFO,
     )
     server_address = ("0.0.0.0", 8000)
+    register_decimal()
 
     app = SimpleApp("CurrencyExchange")
 

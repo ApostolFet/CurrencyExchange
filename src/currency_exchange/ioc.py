@@ -1,3 +1,5 @@
+from sqlite3 import PARSE_DECLTYPES, Connection, connect
+
 from currency_exchange.application.interactors.currencies import (
     CreateCurrencyInteracotor,
     GetCurrenciesInteractor,
@@ -14,20 +16,33 @@ from currency_exchange.application.repo import (
     CurrencyRepository,
     ExchangeRateRepository,
 )
-from currency_exchange.infrastructure.in_memory_repo import (
-    InMemoryCurrencyRepository,
-    InMemoryExchangeRateRepository,
+from currency_exchange.infrastructure.database.repo import (
+    SQLiteCurrencyRepository,
+    SQLiteExchangeRateRepository,
 )
 from simple_di.container import Container
 from simple_di.integration import FromSimpleDi
 
 
-def factory_in_memory_currency_repo() -> CurrencyRepository:
-    return InMemoryCurrencyRepository()
+def factory_sqlite_connection() -> Connection:
+    connection = connect("currency_exchange.db", detect_types=PARSE_DECLTYPES)
+    return connection
 
 
-def factory_in_memory_exchange_rate_repo() -> ExchangeRateRepository:
-    return InMemoryExchangeRateRepository()
+def deliter_sqlite_connection(connection: Connection) -> None:
+    connection.close()
+
+
+def factory_sqlite_currency_repo(
+    connection: FromSimpleDi[Connection],
+) -> CurrencyRepository:
+    return SQLiteCurrencyRepository(connection)
+
+
+def factory_sqlite_exchange_rate_repo(
+    connection: FromSimpleDi[Connection],
+) -> ExchangeRateRepository:
+    return SQLiteExchangeRateRepository(connection)
 
 
 def factory_create_currency_interactor(
@@ -81,8 +96,22 @@ def factory_update_exchange_rate_interactor(
 
 
 def add_dependencies(container: Container) -> None:
-    container.add(CurrencyRepository, factory_in_memory_currency_repo)
-    container.add(ExchangeRateRepository, factory_in_memory_exchange_rate_repo)
+    container.add(
+        Connection,
+        factory_sqlite_connection,
+        deliter_sqlite_connection,
+        scope="REQUEST",
+    )
+    container.add(
+        CurrencyRepository,
+        factory_sqlite_currency_repo,
+        scope="REQUEST",
+    )
+    container.add(
+        ExchangeRateRepository,
+        factory_sqlite_exchange_rate_repo,
+        scope="REQUEST",
+    )
 
     container.add(
         CreateCurrencyInteracotor,
