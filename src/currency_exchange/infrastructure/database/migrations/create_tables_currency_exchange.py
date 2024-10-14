@@ -37,11 +37,14 @@ def upgrade(connection: Connection) -> None:
             rate DECIMAL(16, 6)
         );
 
-        CREATE INDEX IF NOT EXISTS exchange_rates_base_currency ON
-        exchange_rates(base_currency);
+        CREATE INDEX IF NOT EXISTS exchange_rates_base_currency
+        ON exchange_rates(base_currency);
 
         CREATE INDEX IF NOT EXISTS exchange_rates_target_currency
         ON exchange_rates(target_currency);
+
+        CREATE UNIQUE INDEX IF NOT EXISTS exchange_rates_currencies
+        ON exchange_rates(base_currency, target_currency);
         """,
         )
 
