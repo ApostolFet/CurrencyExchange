@@ -41,9 +41,8 @@ class InMemoryCurrencyRepository(CurrencyRepository):
         return base_currency, target_currency
 
     @override
-    def add(self, currency: Currency) -> Currency:
+    def add(self, currency: Currency) -> None:
         self._currency_list.append(currency)
-        return currency
 
 
 class InMemoryExchangeRateRepository(ExchangeRateRepository):
@@ -80,6 +79,5 @@ class InMemoryExchangeRateRepository(ExchangeRateRepository):
         return base_exchange_rate, target_exchange_rate
 
     @override
-    def add(self, exchange_rate: ExchangeRate) -> ExchangeRate:
+    def add(self, exchange_rate: ExchangeRate) -> None:
         self._exchange_rates.add(exchange_rate)
-        return exchange_rate
