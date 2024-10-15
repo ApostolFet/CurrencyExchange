@@ -163,3 +163,4 @@ cython_debug/
 
 # project ignore
 currency_exchange.db
+config.toml
