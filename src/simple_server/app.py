@@ -138,10 +138,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         content_text = content.decode()
         body_type = self.headers.get("Content-Type")
 
-        if body_type == "application/x-www-form-urlencoded":
+        if body_type and "application/x-www-form-urlencoded" in body_type:
             body = dict(parse_qsl(content_text))
 
-        elif body_type == "application/json":
+        elif body_type and "application/json" in body_type:
             body = json.loads(content_text)
         else:
             body = {}
