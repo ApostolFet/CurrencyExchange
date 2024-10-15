@@ -1,10 +1,12 @@
 from contextlib import closing
-from sqlite3 import Connection
+from sqlite3 import Connection, IntegrityError
 from typing import Any, override
 from uuid import UUID
 
 from currency_exchange.application.exceptions import (
+    CurrencyCodeAlreadyExistsError,
     CurrencyNotFoundError,
+    ExchangeRateAlreadyExistsError,
     ExchangeRateNotFoundError,
 )
 from currency_exchange.application.repo import (
@@ -108,23 +110,31 @@ class SQLiteCurrencyRepository(CurrencyRepository):
 
     @override
     def add(self, currency: Currency) -> None:
+        query = """
+            INSERT INTO currencies (id, code, sign, name)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                code = excluded.code,
+                sign = excluded.sign,
+                name = excluded.name;
+        """
+        parameters = (
+            currency.id.bytes,
+            currency.code.value,
+            currency.sign,
+            currency.name,
+        )
+
         with self._conn as conn, closing(conn.cursor()) as cur:
-            cur.execute(
-                """
-                    INSERT INTO currencies (id, code, sign, name)
-                    VALUES (?, ?, ?, ?)
-                    ON CONFLICT(id) DO UPDATE SET
-                        code = excluded.code,
-                        sign = excluded.sign,
-                        name = excluded.name;
-                """,
-                (
-                    currency.id.bytes,
-                    currency.code.value,
-                    currency.sign,
-                    currency.name,
-                ),
-            )
+            try:
+                cur.execute(query, parameters)
+            except IntegrityError as ex:
+                if str(ex) != "UNIQUE constraint failed: currencies.code":
+                    raise
+
+                raise CurrencyCodeAlreadyExistsError(
+                    f"Currency code already exists, code <{currency.code.value}>"
+                ) from None
 
 
 class SQLiteExchangeRateRepository(ExchangeRateRepository):
@@ -186,6 +196,12 @@ class SQLiteExchangeRateRepository(ExchangeRateRepository):
                 """,
                 (base_code, target_code),
             ).fetchone()
+
+        if not result:
+            raise ExchangeRateNotFoundError(
+                f"Exchange rate from <{base_code}> to <{target_code}>",
+            )
+
         return self._map_row(result)
 
     @override
@@ -244,23 +260,37 @@ class SQLiteExchangeRateRepository(ExchangeRateRepository):
 
     @override
     def add(self, exchange_rate: ExchangeRate) -> None:
+        query = """
+            INSERT INTO exchange_rates (id,base_currency,target_currency,rate)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                base_currency = excluded.base_currency,
+                target_currency = excluded.target_currency,
+                rate = excluded.rate;
+        """
+        parameters = (
+            exchange_rate.id.bytes,
+            exchange_rate.base_currency.id.bytes,
+            exchange_rate.target_currency.id.bytes,
+            exchange_rate.rate.value,
+        )
+
         with self._conn as conn, closing(conn.cursor()) as cur:
-            cur.execute(
-                """
-                    INSERT INTO exchange_rates (id,base_currency,target_currency,rate)
-                    VALUES (?, ?, ?, ?)
-                    ON CONFLICT(id) DO UPDATE SET
-                        base_currency = excluded.base_currency,
-                        target_currency = excluded.target_currency,
-                        rate = excluded.rate;
-                """,
-                (
-                    exchange_rate.id.bytes,
-                    exchange_rate.base_currency.id.bytes,
-                    exchange_rate.target_currency.id.bytes,
-                    exchange_rate.rate.value,
-                ),
-            )
+            try:
+                cur.execute(query, parameters)
+            except IntegrityError as ex:
+                if str(ex) != (
+                    "UNIQUE constraint failed: exchange_rates.base_currency,"
+                    " exchange_rates.target_currency"
+                ):
+                    raise
+
+                base_code = exchange_rate.base_currency.code.value
+                target_code = exchange_rate.target_currency.code.value
+
+                raise ExchangeRateAlreadyExistsError(
+                    f"Exchange rate from {base_code} to {target_code} already exists"
+                ) from None
 
     def _map_row(self, row: Any) -> ExchangeRate:
         (

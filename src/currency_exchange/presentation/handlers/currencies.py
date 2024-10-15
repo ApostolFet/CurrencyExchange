@@ -1,6 +1,10 @@
 import logging
 from dataclasses import asdict
 
+from currency_exchange.application.exceptions import (
+    CurrencyCodeAlreadyExistsError,
+    CurrencyNotFoundError,
+)
 from currency_exchange.application.interactors.currencies import (
     CreateCurrencyInteracotor,
     GetCurrenciesInteractor,
@@ -36,7 +40,13 @@ def get_currency(
     logger.info("get currency %s", request)
 
     code = request.path_params.get("code", "")
-    currency = get_currency_interactor(code)
+
+    try:
+        currency = get_currency_interactor(code)
+    except ValueError as ex:
+        return Response(400, {"message": str(ex)})
+    except CurrencyNotFoundError as ex:
+        return Response(404, {"message": str(ex)})
 
     response_body = asdict(currency)
     return Response(200, response_body)
@@ -50,12 +60,34 @@ def create_currency(
 ) -> Response:
     logger.info("create currency %s", request)
 
-    name = request.body.get("name", "")
-    code = request.body.get("code", "")
-    sign = request.body.get("sign", "")
+    name = request.body.get("name")
+    code = request.body.get("code")
+    sign = request.body.get("sign")
+
+    if name is None or code is None or sign is None:
+        empty_fields = "; ".join(
+            (
+                field_name
+                for field_name, value in (
+                    ("name", name),
+                    ("code", code),
+                    ("sign", sign),
+                )
+                if value is None
+            )
+        )
+        return Response(
+            400,
+            {"message": f"Fields <{empty_fields}> not filled in"},
+        )
 
     create_currency = CreateCurrency(name, code, sign)
-    created_currency = create_currency_interactor(create_currency)
+    try:
+        created_currency = create_currency_interactor(create_currency)
+    except ValueError as ex:
+        return Response(400, {"message": str(ex)})
+    except CurrencyCodeAlreadyExistsError as ex:
+        return Response(409, {"message": str(ex)})
 
     response_body = asdict(created_currency)
 

@@ -23,7 +23,7 @@ class Rate(ValueObject[Decimal]):
     @override
     def _validate(self) -> None:
         if self.value <= 0:
-            raise ValueError("Rate must be greater then zero")
+            raise ValueError(f"Rate must be greater then zero, got <{self.value}>")
 
 
 @dataclass(frozen=True)
@@ -35,4 +35,7 @@ class CurrencyCode(ValueObject[str]):
         count_letters = 3
 
         if len(self.value) != count_letters:
-            raise ValueError(f"Currency code must be a {count_letters} letter code")
+            raise ValueError(
+                f"Currency code must be a {count_letters} letter code, "
+                f"got code <{self.value}>"
+            )

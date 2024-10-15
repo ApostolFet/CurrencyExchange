@@ -17,7 +17,7 @@ from currency_exchange.domain.services import (
     merge_exchange_rate,
     reverse_exchange_rate,
 )
-from currency_exchange.domain.value_objects import Rate
+from currency_exchange.domain.value_objects import CurrencyCode, Rate
 
 
 class GetExchangeRatesInteractor:
@@ -42,8 +42,12 @@ class GetExchangeRateInteractor:
         self,
         get_exchage_rate: GetExchangeRate,
     ) -> ExchangeRateDTO:
+        base_code = CurrencyCode(get_exchage_rate.base_code).value
+        target_code = CurrencyCode(get_exchage_rate.target_code).value
+
         exchange_rate = self._exchange_rate_repo.get_by_currency_codes(
-            get_exchage_rate.base_code, get_exchage_rate.target_code
+            base_code,
+            target_code,
         )
         return ExchangeRateDTO.from_domain(exchange_rate)
 
@@ -111,8 +115,8 @@ class ExchangeCurrencyInteractor:
         exchange_currency_dto: ExchangeCurrencyDTO,
     ) -> ExchangedCurrencyDTO:
         codes = (
-            exchange_currency_dto.base_currency_code,
-            exchange_currency_dto.target_currency_code,
+            CurrencyCode(exchange_currency_dto.base_currency_code).value,
+            CurrencyCode(exchange_currency_dto.target_currency_code).value,
         )
         try:
             exchange_rate = self._exchange_rate_repo.get_by_currency_codes(*codes)

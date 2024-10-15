@@ -26,7 +26,8 @@ class GetCurrencyInteractor:
         self._currency_repo = currency_repo
 
     def __call__(self, code: str) -> CurrencyDTO:
-        currency = self._currency_repo.get_by_code(code)
+        currency_code = CurrencyCode(code)
+        currency = self._currency_repo.get_by_code(currency_code.value)
 
         return CurrencyDTO.from_domain(currency)
 
