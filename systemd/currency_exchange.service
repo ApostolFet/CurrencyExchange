@@ -1,0 +1,13 @@
+[Unit]
+Description=Currency Exchange
+After=network.target
+
+
+[Service]
+WorkingDirectory=<your project path>
+ExecStart=<your venv path>/bin/currency-exchange-run
+Restart=on-failure
+
+
+[Install]
+WantedBy=multi-user.target
