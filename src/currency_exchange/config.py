@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from pathlib import Path
 from tomllib import load
 
 
+@dataclass
 class Config:
     host: str
     port: int
