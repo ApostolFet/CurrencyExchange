@@ -129,7 +129,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_response(response.status_code)
         self.send_header("Content-Length", str(len(response_body)))
         self.send_header("Content-Type", content_type)
+        for keyword, value in response.headers.items():
+            self.send_header(keyword, value)
         self.end_headers()
+
         self.wfile.write(response_body.encode())
 
     def _parse_body(self) -> dict[str, Any]:

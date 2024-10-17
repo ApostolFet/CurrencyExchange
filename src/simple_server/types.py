@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 type ResponseBody = dict[str, Any] | list[dict[str, Any]]
@@ -17,6 +17,7 @@ class Request:
 class Response:
     status_code: int = 200
     body: ResponseBody | None = None
+    headers: dict[str, str] = field(default_factory=dict)
 
 
 type Path = str
