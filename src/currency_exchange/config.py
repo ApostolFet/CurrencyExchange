@@ -7,6 +7,10 @@ from tomllib import load
 class Config:
     host: str
     port: int
+    allow_origins: list[str]
+    allow_methods: list[str]
+    allow_headers: list[str]
+    allow_credentials: bool
 
 
 def load_config(path: Path = Path("config.example.toml")) -> Config:

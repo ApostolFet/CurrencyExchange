@@ -12,7 +12,7 @@ from currency_exchange.presentation.handlers.exchange import exchange_router
 from currency_exchange.presentation.handlers.exchange_rates import exchange_rates_router
 from simple_di import Container
 from simple_di.integration import setup
-from simple_server import SimpleApp
+from simple_server import CORSMiddleware, SimpleApp
 
 
 def main() -> None:
@@ -30,6 +30,14 @@ def main() -> None:
     register_decimal()
 
     app = SimpleApp("CurrencyExchange")
+
+    cors_middleware = CORSMiddleware(
+        allow_origins=config.allow_origins,
+        allow_methods=config.allow_methods,
+        allow_headers=config.allow_headers,
+        allow_credentials=config.allow_credentials,
+    )
+    app.add_middleware(cors_middleware)
 
     app.include_router(exchange_router)
     app.include_router(currency_router)
