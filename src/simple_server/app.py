@@ -102,6 +102,9 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_PUT(self) -> None:
         self._handle_request()
 
+    def do_OPTIONS(self) -> None:
+        self._handle_request()
+
     def _handle_request(self) -> None:
         body = self._parse_body()
         params = self._parse_params()
@@ -118,7 +121,9 @@ class RequestHandler(BaseHTTPRequestHandler):
             logger.exception("Error while handling request")
             self.send_error(500)
             return
+        self._send_full_response(response)
 
+    def _send_full_response(self, response: Response) -> None:
         if response.body is not None:
             response_body = json.dumps(response.body, cls=SimpleEncoder)
             content_type = "application/json"

@@ -15,10 +15,11 @@ class Router:
         method: Method,
         path: Path,
     ) -> Callable[[Handler], None]:
-        def decorate_handler(func: Handler) -> None:
+        def reigister_handler(func: Handler) -> None:
             self._handler_registry.append((method, path, func))
+            self._handler_registry.append(("OPTIONS", path, options_handler))
 
-        return decorate_handler
+        return reigister_handler
 
     def handle(self, request: Request, method: Method, path: Path) -> Response:
         for registry_method, registry_path, registry_handler in self._handler_registry:
@@ -35,3 +36,7 @@ class Router:
             return registry_handler(request)
 
         raise RequestNotHandledError
+
+
+def options_handler(_: Request) -> Response:
+    return Response(200)
