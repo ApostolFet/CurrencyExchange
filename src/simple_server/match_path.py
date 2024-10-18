@@ -21,6 +21,10 @@ def match_path(path: str, template: str) -> dict[str, str]:
     Traceback (most recent call last):
         ...
     PathNotMatchError
+
+
+    >>> match_path("/exchangeRate/RUBUSD", "/exchangeRate/{pair_code}")
+    {'pair_code': 'RUBUSD'}
     """
     parse_template = template.replace("}", "{").rstrip("{").split("{")
     prefix = parse_template[0]
@@ -36,7 +40,7 @@ def match_path(path: str, template: str) -> dict[str, str]:
         return {}
 
     path_param = parse_template[path_param_index]
-    value = path.lstrip(prefix).rstrip("/")
+    value = path.removeprefix(prefix).rstrip("/")
     if "/" in value:
         raise PathNotMatchError
 
