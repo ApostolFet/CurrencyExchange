@@ -1,12 +1,11 @@
 ![Logo](/docs/logo.jpg)
 
 
-# Simulation
+# CurrencyExchange
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 [![Linting: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Roadmap](https://img.shields.io/badge/%F0%9F%97%BA%EF%B8%8F-Roadmap%20-0a0a0a.svg?style=flat&colorA=0a0a0a)](https://zhukovsd.github.io/python-backend-learning-course/projects/currency-exchange/)
 
-# CurrencyExchange
 
 Проект представляет собой REST API, который обеспечивает работу с данными о валютах и обменных курсах. 
 Пользователи могут просматривать и редактировать данные о валютах, а также проводить расчет конвертации различных сумм между различными валютами.
