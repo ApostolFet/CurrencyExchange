@@ -90,7 +90,7 @@ def create_exchange_rate(
         )
 
     try:
-        rate_decimal = Decimal(rate)
+        rate_decimal = Decimal(str(rate))
     except InvalidOperation:
         return Response(
             400, {"message": f"Rate must be convertable to decimal, got <{rate}>"}
@@ -138,7 +138,7 @@ def update_exchange_rate(
     target_code = pair_code[3:]
 
     try:
-        rate_decimal = Decimal(rate)
+        rate_decimal = Decimal(str(rate))
     except InvalidOperation:
         return Response(
             400, {"message": f"Rate must be convertable to decimal, got <{rate}>"}

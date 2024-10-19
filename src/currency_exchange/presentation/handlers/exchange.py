@@ -44,14 +44,14 @@ def exchange_currency(
         )
 
     try:
-        amount = Decimal(amount)
+        amount = Decimal(str(amount))
     except InvalidOperation:
         return Response(
             400, {"message": f"Amount must be convertable to decimal, got <{amount}>"}
         )
 
     exchange_currency_dto = ExchangeCurrencyDTO(
-        base_currency_code, target_currency_code, Decimal(amount)
+        base_currency_code, target_currency_code, Decimal(str(amount))
     )
 
     try:
