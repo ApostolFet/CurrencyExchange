@@ -25,9 +25,9 @@ def upgrade(connection: Connection) -> None:
             """
         CREATE TABLE IF NOT EXISTS currencies (
             id BLOB(16) PRIMARY KEY,
-            code VARCHAR(3) UNIQUE,
-            sign VARCHAR(255),
-            name VARCHAR(255)
+            code TEXT UNIQUE CHECK(length(code) <= 3),
+            sign TEXT CHECK(length(code) <= 5),
+            name TEXT CHECK(length(code) <= 30)
         );
 
         CREATE TABLE IF NOT EXISTS exchange_rates (
