@@ -39,3 +39,27 @@ class CurrencyCode(ValueObject[str]):
                 f"Currency code must be a {count_letters} letter code, "
                 f"got code <{self.value}>"
             )
+
+
+@dataclass(frozen=True)
+class CurrencyName(ValueObject[str]):
+    value: str
+
+    @override
+    def _validate(self) -> None:
+        max_name_len = 30
+
+        if len(self.value) > max_name_len:
+            raise ValueError("Currency name to long")
+
+
+@dataclass(frozen=True)
+class CurrencySign(ValueObject[str]):
+    value: str
+
+    @override
+    def _validate(self) -> None:
+        max_sign_len = 5
+
+        if len(self.value) > max_sign_len:
+            raise ValueError("Currency sign to long")

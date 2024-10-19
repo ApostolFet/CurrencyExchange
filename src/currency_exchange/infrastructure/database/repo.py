@@ -14,7 +14,12 @@ from currency_exchange.application.repo import (
     ExchangeRateRepository,
 )
 from currency_exchange.domain.models import Currency, ExchangeRate
-from currency_exchange.domain.value_objects import CurrencyCode, Rate
+from currency_exchange.domain.value_objects import (
+    CurrencyCode,
+    CurrencyName,
+    CurrencySign,
+    Rate,
+)
 
 
 class SQLiteCurrencyRepository(CurrencyRepository):
@@ -33,9 +38,9 @@ class SQLiteCurrencyRepository(CurrencyRepository):
             id_, code, sign, name = row
             result_currencies.append(
                 Currency(
-                    name,
+                    CurrencyName(name),
                     CurrencyCode(code),
-                    sign,
+                    CurrencySign(sign),
                     UUID(bytes=id_),
                 )
             )
@@ -58,9 +63,9 @@ class SQLiteCurrencyRepository(CurrencyRepository):
 
         id_, code, sign, name = result
         currency = Currency(
-            name,
+            CurrencyName(name),
             CurrencyCode(code),
-            sign,
+            CurrencySign(sign),
             UUID(bytes=id_),
         )
         return currency
@@ -93,17 +98,17 @@ class SQLiteCurrencyRepository(CurrencyRepository):
 
         id_, code, sign, name = base_currencies_row
         base_currencies = Currency(
-            name,
+            CurrencyName(name),
             CurrencyCode(code),
-            sign,
+            CurrencySign(sign),
             UUID(bytes=id_),
         )
 
         id_, code, sign, name = target_currencies_row
         target_currencies = Currency(
-            name,
+            CurrencyName(name),
             CurrencyCode(code),
-            sign,
+            CurrencySign(sign),
             UUID(bytes=id_),
         )
         return (base_currencies, target_currencies)
@@ -121,8 +126,8 @@ class SQLiteCurrencyRepository(CurrencyRepository):
         parameters = (
             currency.id.bytes,
             currency.code.value,
-            currency.sign,
-            currency.name,
+            currency.sign.value,
+            currency.name.value,
         )
 
         with self._conn as conn, closing(conn.cursor()) as cur:
@@ -309,15 +314,15 @@ class SQLiteExchangeRateRepository(ExchangeRateRepository):
         base_currency = Currency(
             id=UUID(bytes=base_currency_id),
             code=CurrencyCode(base_currency_code),
-            name=base_currency_name,
-            sign=base_currency_sign,
+            name=CurrencyName(base_currency_name),
+            sign=CurrencySign(base_currency_sign),
         )
 
         target_currency = Currency(
             id=UUID(bytes=target_currency_id),
             code=CurrencyCode(target_currency_code),
-            name=target_currency_name,
-            sign=target_currency_sign,
+            name=CurrencyName(target_currency_name),
+            sign=CurrencySign(target_currency_sign),
         )
 
         return ExchangeRate(

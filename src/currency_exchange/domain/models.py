@@ -3,7 +3,12 @@ from dataclasses import dataclass, field
 from typing import override
 from uuid import UUID, uuid4
 
-from currency_exchange.domain.value_objects import CurrencyCode, Rate
+from currency_exchange.domain.value_objects import (
+    CurrencyCode,
+    CurrencyName,
+    CurrencySign,
+    Rate,
+)
 
 type CurrencyId = UUID
 type ExchangeRateId = UUID
@@ -26,9 +31,9 @@ class Entity[T: Hashable]:
 
 @dataclass(eq=False)
 class Currency(Entity[CurrencyId]):
-    name: str
+    name: CurrencyName
     code: CurrencyCode
-    sign: str
+    sign: CurrencySign
     id: CurrencyId = field(default_factory=uuid4)
 
 

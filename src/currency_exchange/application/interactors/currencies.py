@@ -6,7 +6,11 @@ from currency_exchange.application.repo import (
     CurrencyRepository,
 )
 from currency_exchange.domain.models import Currency
-from currency_exchange.domain.value_objects import CurrencyCode
+from currency_exchange.domain.value_objects import (
+    CurrencyCode,
+    CurrencyName,
+    CurrencySign,
+)
 
 
 class GetCurrenciesInteractor:
@@ -38,9 +42,9 @@ class CreateCurrencyInteracotor:
 
     def __call__(self, create_currency: CreateCurrency) -> CurrencyDTO:
         currency = Currency(
-            create_currency.name,
+            CurrencyName(create_currency.name),
             CurrencyCode(create_currency.code),
-            sign=create_currency.sign,
+            sign=CurrencySign(create_currency.sign),
         )
 
         self._currency_repo.add(currency)

@@ -23,9 +23,9 @@ class CurrencyDTO:
     def from_domain(cls, currency: Currency) -> Self:
         return cls(
             id=currency.id,
-            name=currency.name,
+            name=currency.name.value,
             code=currency.code.value,
-            sign=currency.sign,
+            sign=currency.sign.value,
         )
 
 

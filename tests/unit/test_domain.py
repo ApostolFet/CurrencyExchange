@@ -11,12 +11,19 @@ from currency_exchange.domain.services import (
     merge_exchange_rate,
     reverse_exchange_rate,
 )
-from currency_exchange.domain.value_objects import CurrencyCode, Rate
+from currency_exchange.domain.value_objects import (
+    CurrencyCode,
+    CurrencyName,
+    CurrencySign,
+    Rate,
+)
 
 
 def test_create_exchange_rate() -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
 
     rate_ruble_dollar = Decimal(100)
     expected_result_rate = Rate(rate_ruble_dollar)
@@ -29,8 +36,10 @@ def test_create_exchange_rate() -> None:
 
 
 def test_exchange_currency() -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
     rate = Decimal(30)
     exchange_rate = ExchangeRate(ruble, dollar, Rate(rate))
     amount = Decimal(1_000)
@@ -42,8 +51,10 @@ def test_exchange_currency() -> None:
 
 
 def test_reverse_exchange_rate() -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
     rate = Decimal(100)
 
     exchange_rate = ExchangeRate(ruble, dollar, Rate(rate))
@@ -57,9 +68,11 @@ def test_reverse_exchange_rate() -> None:
 
 
 def test_merge_exchange_rate() -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
 
     rate_ruble_dollar = Decimal(100)
     exchange_rate_ruble_dollar = ExchangeRate(ruble, dollar, Rate(rate_ruble_dollar))
@@ -78,10 +91,14 @@ def test_merge_exchange_rate() -> None:
 
 
 def test_cant_merge_non_related_exchange_rate() -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
-    sterling = Currency("Pound Sterling", CurrencyCode("GBP"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
+    sterling = Currency(
+        CurrencyName("Pound Sterling"), CurrencyCode("GBP"), CurrencySign("")
+    )
 
     rate_ruble_dollar = Decimal(100)
     exchange_rate_ruble_dollar = ExchangeRate(ruble, dollar, Rate(rate_ruble_dollar))

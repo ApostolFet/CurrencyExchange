@@ -8,7 +8,12 @@ from currency_exchange.application.exceptions import (
     ExchangeRateAlreadyExistsError,
 )
 from currency_exchange.domain.models import Currency, ExchangeRate
-from currency_exchange.domain.value_objects import CurrencyCode, Rate
+from currency_exchange.domain.value_objects import (
+    CurrencyCode,
+    CurrencyName,
+    CurrencySign,
+    Rate,
+)
 from currency_exchange.infrastructure.database.repo import (
     SQLiteCurrencyRepository,
     SQLiteExchangeRateRepository,
@@ -16,9 +21,11 @@ from currency_exchange.infrastructure.database.repo import (
 
 
 def test_get_currency_by_code(connection_in_memory_db: Connection) -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
 
     repo = SQLiteCurrencyRepository(connection_in_memory_db)
     repo.add(ruble)
@@ -30,9 +37,11 @@ def test_get_currency_by_code(connection_in_memory_db: Connection) -> None:
 
 
 def test_get_pair_currency(connection_in_memory_db: Connection) -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
 
     repo = SQLiteCurrencyRepository(connection_in_memory_db)
     repo.add(ruble)
@@ -44,9 +53,11 @@ def test_get_pair_currency(connection_in_memory_db: Connection) -> None:
 
 
 def test_get_all_currencies(connection_in_memory_db: Connection) -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
 
     repo = SQLiteCurrencyRepository(connection_in_memory_db)
     repo.add(ruble)
@@ -60,8 +71,16 @@ def test_get_all_currencies(connection_in_memory_db: Connection) -> None:
 def test_failed_adding_existing_code(
     connection_in_memory_db: Connection,
 ) -> None:
-    ruble_1 = Currency("Russian Ruble 1", CurrencyCode("RUB"), "")
-    ruble_2 = Currency("Russian Ruble 2", CurrencyCode("RUB"), "")
+    ruble_1 = Currency(
+        CurrencyName("Russian Ruble 1"),
+        CurrencyCode("RUB"),
+        CurrencySign(""),
+    )
+    ruble_2 = Currency(
+        CurrencyName("Russian Ruble 2"),
+        CurrencyCode("RUB"),
+        CurrencySign(""),
+    )
 
     currency_repo = SQLiteCurrencyRepository(connection_in_memory_db)
     currency_repo.add(ruble_1)
@@ -73,9 +92,11 @@ def test_failed_adding_existing_code(
 def test_get_by_currency_codes_exchange_rate(
     connection_in_memory_db: Connection,
 ) -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
     ruble_dollar_rate = ExchangeRate(ruble, dollar, rate=Rate(Decimal("30")))
     dollar_euro_rate = ExchangeRate(dollar, euro, rate=Rate(Decimal("1.5")))
 
@@ -95,9 +116,11 @@ def test_get_by_currency_codes_exchange_rate(
 def test_related_exchanges_by_currency_codes(
     connection_in_memory_db: Connection,
 ) -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
     ruble_dollar_rate = ExchangeRate(ruble, dollar, rate=Rate(Decimal("30")))
     dollar_euro_rate = ExchangeRate(dollar, euro, rate=Rate(Decimal("1.5")))
 
@@ -120,9 +143,11 @@ def test_related_exchanges_by_currency_codes(
 def test_get_all_exchanges(
     connection_in_memory_db: Connection,
 ) -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
-    euro = Currency("Euro", CurrencyCode("EUR"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
+    euro = Currency(CurrencyName("Euro"), CurrencyCode("EUR"), CurrencySign(""))
     ruble_dollar_rate = ExchangeRate(ruble, dollar, rate=Rate(Decimal("30")))
     dollar_euro_rate = ExchangeRate(dollar, euro, rate=Rate(Decimal("1.5")))
 
@@ -141,8 +166,10 @@ def test_get_all_exchanges(
 def test_failed_adding_existing_exchange_rate(
     connection_in_memory_db: Connection,
 ) -> None:
-    ruble = Currency("Russian Ruble", CurrencyCode("RUB"), "")
-    dollar = Currency("US Dollar", CurrencyCode("USD"), "")
+    ruble = Currency(
+        CurrencyName("Russian Ruble"), CurrencyCode("RUB"), CurrencySign("")
+    )
+    dollar = Currency(CurrencyName("US Dollar"), CurrencyCode("USD"), CurrencySign(""))
 
     ruble_dollar_rate = ExchangeRate(ruble, dollar, rate=Rate(Decimal("30")))
     dollar_euro_rate = ExchangeRate(ruble, dollar, rate=Rate(Decimal("100")))
