@@ -204,7 +204,7 @@ class SQLiteExchangeRateRepository(ExchangeRateRepository):
 
         if not result:
             raise ExchangeRateNotFoundError(
-                f"Exchange rate from <{base_code}> to <{target_code}>",
+                f"Not found exchange rate from <{base_code}> to <{target_code}>",
             )
 
         return self._map_row(result)
@@ -251,7 +251,7 @@ class SQLiteExchangeRateRepository(ExchangeRateRepository):
 
         if base_exchange_rate is None:
             raise ExchangeRateNotFoundError(
-                f"ExchangeRate with code pair <{base_code}>-<{related_code}>"
+                f"Exchange Rate with code pair <{base_code}>-<{related_code}>"
                 " was not found"
             )
 
