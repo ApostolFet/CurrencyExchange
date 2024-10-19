@@ -153,6 +153,8 @@ def update_exchange_rate(
         updated_exchange_rate = update_exchange_rate_interactor(
             update_exchange_rate_dto
         )
+    except ValueError as ex:
+        return Response(400, {"message": str(ex)})
     except ExchangeRateNotFoundError as ex:
         return Response(404, {"message": str(ex)})
 
