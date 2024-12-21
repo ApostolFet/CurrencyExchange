@@ -26,6 +26,7 @@ from simple_di.integration import FromSimpleDi
 
 def factory_sqlite_connection() -> Connection:
     connection = connect("currency_exchange.db", detect_types=PARSE_DECLTYPES)
+    connection.execute("PRAGMA foreign_keys = ON;")
     return connection
 
 
