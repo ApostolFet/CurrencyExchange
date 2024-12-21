@@ -2,6 +2,7 @@ from sqlite3 import PARSE_DECLTYPES, Connection, connect
 
 from currency_exchange.application.interactors.currencies import (
     CreateCurrencyInteracotor,
+    DeleteCurrencyInteractor,
     GetCurrenciesInteractor,
     GetCurrencyInteractor,
 )
@@ -62,6 +63,12 @@ def factory_get_currency_interactor(
     currency_repo: FromSimpleDi[CurrencyRepository],
 ) -> GetCurrencyInteractor:
     return GetCurrencyInteractor(currency_repo)
+
+
+def factory_delete_currency_interactor(
+    currency_repo: FromSimpleDi[CurrencyRepository],
+) -> DeleteCurrencyInteractor:
+    return DeleteCurrencyInteractor(currency_repo)
 
 
 def factory_exchange_interactor(
@@ -127,6 +134,11 @@ def add_dependencies(container: Container) -> None:
     container.add(
         GetCurrencyInteractor,
         factory_get_currency_interactor,
+        scope="REQUEST",
+    )
+    container.add(
+        DeleteCurrencyInteractor,
+        factory_delete_currency_interactor,
         scope="REQUEST",
     )
     container.add(

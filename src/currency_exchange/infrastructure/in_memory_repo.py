@@ -44,6 +44,10 @@ class InMemoryCurrencyRepository(CurrencyRepository):
     def add(self, currency: Currency) -> None:
         self._currency_list.append(currency)
 
+    @override
+    def remove(self, currency: Currency) -> None:
+        self._currency_list.remove(currency)
+
 
 class InMemoryExchangeRateRepository(ExchangeRateRepository):
     def __init__(self) -> None:

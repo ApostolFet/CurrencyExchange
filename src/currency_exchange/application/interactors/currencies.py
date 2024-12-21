@@ -50,3 +50,14 @@ class CreateCurrencyInteracotor:
         self._currency_repo.add(currency)
 
         return CurrencyDTO.from_domain(currency)
+
+
+class DeleteCurrencyInteractor:
+    def __init__(self, currency_repo: CurrencyRepository) -> None:
+        self._currency_repo = currency_repo
+
+    def __call__(self, code: str) -> None:
+        currency_code = CurrencyCode(code)
+
+        currency = self._currency_repo.get_by_code(currency_code.value)
+        self._currency_repo.remove(currency)

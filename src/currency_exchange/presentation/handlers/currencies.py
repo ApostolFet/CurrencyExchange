@@ -7,6 +7,7 @@ from currency_exchange.application.exceptions import (
 )
 from currency_exchange.application.interactors.currencies import (
     CreateCurrencyInteracotor,
+    DeleteCurrencyInteractor,
     GetCurrenciesInteractor,
     GetCurrencyInteractor,
 )
@@ -92,3 +93,23 @@ def create_currency(
     response_body = asdict(created_currency)
 
     return Response(201, response_body)
+
+
+@currency_router.route("DELETE", "/currency/{code}")
+@inject
+def delete_currency(
+    request: Request,
+    delete_currency_interactor: FromSimpleDi[DeleteCurrencyInteractor],
+) -> Response:
+    logger.info("delete currency %s", request)
+
+    code = request.path_params.get("code", "")
+
+    try:
+        delete_currency_interactor(code)
+    except ValueError as ex:
+        return Response(400, {"message": str(ex)})
+    except CurrencyNotFoundError as ex:
+        return Response(404, {"message": str(ex)})
+
+    return Response(200)

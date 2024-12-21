@@ -141,6 +141,15 @@ class SQLiteCurrencyRepository(CurrencyRepository):
                     f"Currency code already exists, code <{currency.code.value}>"
                 ) from None
 
+    @override
+    def remove(self, currency: Currency) -> None:
+        query = """
+            DELETE FROM currencies WHERE id = ?
+        """
+
+        with self._conn as conn, closing(conn.cursor()) as cur:
+            cur.execute(query, (currency.id.bytes,))
+
 
 class SQLiteExchangeRateRepository(ExchangeRateRepository):
     def __init__(self, conntection: Connection) -> None:
