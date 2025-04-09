@@ -109,7 +109,7 @@ def delete_currency(
         delete_currency_interactor(code)
     except ValueError as ex:
         return Response(400, {"message": str(ex)})
-    except CurrencyNotFoundError as ex:
-        return Response(404, {"message": str(ex)})
+    except CurrencyNotFoundError:
+        return Response(204)
 
-    return Response(200)
+    return Response(204)
